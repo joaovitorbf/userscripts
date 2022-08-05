@@ -3,11 +3,30 @@
 // @namespace   jvbf Userscripts
 // @match       *://*.instagram.com/*
 // @grant       none
-// @version     1.0
+// @version     1.1
 // @author      jvbf
 // @license     MIT
 // @description Enable video control on Instagram Web
 // ==/UserScript==
+
+// evawrap by jvbf
+// a wrapper for easier use of document.evaluate
+class evawrap {
+    static evaluate(root, path) {
+        return document.evaluate(path, root, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    }
+
+    static evaluateAll = function (root, path) {
+        var evl = document.evaluate(path, root, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+        var result = [];
+        var node = evl.iterateNext();
+        while (node) {
+            result.push(node);
+            node = evl.iterateNext();
+        }
+        return result;
+    }
+}
 
 var rateLimit = false;
 
@@ -16,8 +35,8 @@ var polling = setInterval(() => {
     if (main) {
         var observer = new MutationObserver(() => {
             if (!rateLimit) {
-                Array.from(document.querySelectorAll("video._ab1d")).forEach((el) => { el.setAttribute("controls", ""); })
-                Array.from(document.querySelectorAll("._aato._ab1k._ab1l > div:not(:first-child)")).forEach((el) => { el.remove() })
+                evawrap.evaluateAll(document, '//video').forEach((el) => { el.setAttribute("controls", ""); })
+                evawrap.evaluateAll(document, '//div[@aria-label="Control"]/../*[not(position()=1)]').forEach((el)=>{el.remove()})
                 console.log("trigger")
                 rateLimit = true
                 setTimeout(() => { rateLimit = false }, 100)
