@@ -3,7 +3,7 @@
 // @namespace   jvbf Userscripts
 // @match       *://*.instagram.com/*
 // @grant       none
-// @version     1.1
+// @version     1.2
 // @author      jvbf
 // @license     MIT
 // @description Enable video control on Instagram Web
@@ -36,7 +36,7 @@ var polling = setInterval(() => {
         var observer = new MutationObserver(() => {
             if (!rateLimit) {
                 evawrap.evaluateAll(document, '//video').forEach((el) => { el.setAttribute("controls", ""); })
-                evawrap.evaluateAll(document, '//div[@aria-label="Control"]/../*[not(position()=1)]').forEach((el)=>{el.remove()})
+                evawrap.evaluateAll(document, '//div[contains(@aria-label,"Control")]/../*[not(position()=1)]').forEach((el)=>{el.remove()})
                 console.log("trigger")
                 rateLimit = true
                 setTimeout(() => { rateLimit = false }, 100)
